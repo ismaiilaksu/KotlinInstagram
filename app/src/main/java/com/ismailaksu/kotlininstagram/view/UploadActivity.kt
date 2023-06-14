@@ -88,23 +88,68 @@ class UploadActivity : AppCompatActivity() {
 
     fun selectImage ( view: View) {
 
-        if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this,android.Manifest.permission.READ_MEDIA_IMAGES)){
-                Snackbar.make(view,"Galeriye ulasmak icin izin vermelisiniz",Snackbar.LENGTH_INDEFINITE).setAction("İzin ver") {
+        if (android.os.Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        android.Manifest.permission.READ_MEDIA_IMAGES
+                    )
+                ) {
+                    Snackbar.make(
+                        view,
+                        "Galeriye ulasmak icin izin vermelisiniz",
+                        Snackbar.LENGTH_INDEFINITE
+                    ).setAction("İzin ver") {
+                        //request permission
+                        permissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+
+                    }.show()
+                } else {
                     //request permission
                     permissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
-
-                }.show()
+                }
             } else {
-                //request permission
-                permissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
+                val intentToGallery =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                activityResultLauncher.launch(intentToGallery)
+                //start activity for result
             }
-        } else {
-            val intentToGallery = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            activityResultLauncher.launch(intentToGallery)
-            //start activity for result
-        }
 
+        }else {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
+                ) {
+                    Snackbar.make(
+                        view,
+                        "Galeriye ulasmak icin izin vermelisiniz",
+                        Snackbar.LENGTH_INDEFINITE
+                    ).setAction("İzin ver") {
+                        //request permission
+                        permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+
+                    }.show()
+                } else {
+                    //request permission
+                    permissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+            } else {
+                val intentToGallery =
+                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                activityResultLauncher.launch(intentToGallery)
+                //start activity for result
+            }
+        }
     }
 
     private fun registerLauncher(){
